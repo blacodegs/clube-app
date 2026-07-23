@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clube de Assinaturas — Minha Conta</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<!-- TELA DE LOGIN -->
+<div id="tela-login" class="tela-login">
+  <div class="cartao-login">
+    <img src="images/clube-de-assinaturas.png" alt="Clube de Assinaturas" class="logo-titulo-login">
+    <p>Entre com a conta Google cadastrada pelo administrador do grupo para acessar sua área.</p>
+    <div id="google-login-btn"></div>
+    <div class="mensagem-erro" id="mensagem-erro"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="oculto">
+  <header class="topo">
+    <div class="marca">
+      <img src="images/logo-streaming1.png" alt="Clube de Assinaturas" class="logo-icone-header">
+      <div>
+        <h1>Clube de Assinaturas</h1>
+        <span>divisão inteligente de streamings</span>
+      </div>
+    </div>
+
+    <nav class="nav-abas">
+      <button class="ativo">Minha Conta</button>
+      <a id="link-admin" href="admin.html" class="oculto" style="text-decoration:none;">
+        <button>Administração</button>
+      </a>
+    </nav>
+
+    <div class="perfil">
+      <div class="avatar" id="avatar-iniciais"></div>
+      <span id="nome-usuario"></span>
+      <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="secao">
+      <div class="secao-titulo">
+        <div>
+          <h2>Resumo</h2>
+          <p>Sua posição financeira no grupo hoje</p>
+        </div>
+      </div>
+      <div class="grade-resumo" id="grade-resumo">
+        <div class="carregando">Carregando...</div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="secao-titulo">
+        <div>
+          <h2>Suas assinaturas</h2>
+          <p>Streamings que você divide — e os que ainda não fazem parte da sua cesta</p>
+        </div>
+      </div>
+      <div class="grade-tickets" id="grade-tickets">
+        <div class="carregando">Carregando...</div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="secao-titulo">
+        <div>
+          <h2>Pagamento</h2>
+          <p>Gere o Pix com o valor exato devido, já com multa e juros se houver atraso</p>
+        </div>
+      </div>
+      <div id="secao-pagamento">
+        <div class="carregando">Carregando...</div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="secao-titulo">
+        <div>
+          <h2>Extrato</h2>
+          <p>Histórico completo dos seus lançamentos</p>
+        </div>
+      </div>
+      <table class="tabela-extrato">
+        <thead>
+          <tr><th>Vencimento</th><th>Valor devido</th><th>Juros</th><th>Total</th><th>Situação</th></tr>
+        </thead>
+        <tbody id="corpo-extrato">
+          <tr><td colspan="5" class="carregando">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
