@@ -42,6 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
     format: 'yyyy-mm-dd',
     autoClose: true,
     yearRange: 5,
+    onSelect: function(date) {
+      // "this" é a instância do Datepicker; this.el é o input correspondente.
+      if (this.el && this.el.id === 'form-plano-data-inicio') {
+        recalcularDataFimPlano();
+      }
+    },
     i18n: {
       months: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
       monthsShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
@@ -54,7 +60,58 @@ document.addEventListener('DOMContentLoaded', () => {
       today: 'Hoje'
     }
   });
+
+  instanciaDatepickerPlanoFim = M.Datepicker.getInstance(document.getElementById('form-plano-data-fim'));
+  const inputParcelas = document.getElementById('form-plano-parcelas');
+  if (inputParcelas) inputParcelas.addEventListener('input', recalcularDataFimPlano);
+  recalcularDataFimPlano();
 });
+
+let instanciaDatepickerPlanoFim = null;
+
+/**
+ * Quando PARCELAS > 1, o campo "Data de fim" fica travado e é calculado
+ * automaticamente: a última parcela vence "parcelas" meses após a data de
+ * início (a 1ª parcela vence no mês seguinte ao início, e assim por diante
+ * até a última). Quando PARCELAS = 1, o campo volta a ser editável
+ * manualmente.
+ */
+function recalcularDataFimPlano() {
+  const inputParcelas = document.getElementById('form-plano-parcelas');
+  const inputInicio = document.getElementById('form-plano-data-inicio');
+  const inputFim = document.getElementById('form-plano-data-fim');
+  if (!inputParcelas || !inputInicio || !inputFim) return;
+
+  const parcelas = Number(inputParcelas.value) || 1;
+
+  if (parcelas <= 1) {
+    inputFim.disabled = false;
+    return;
+  }
+
+  inputFim.disabled = true;
+  if (!inputInicio.value) return;
+
+  const dataInicio = new Date(inputInicio.value + 'T00:00:00');
+  if (isNaN(dataInicio)) return;
+
+  const dataFim = new Date(dataInicio);
+  dataFim.setMonth(dataFim.getMonth() + parcelas);
+
+  const iso = formatarDataISO(dataFim);
+  inputFim.value = iso;
+  if (instanciaDatepickerPlanoFim) {
+    instanciaDatepickerPlanoFim.setDate(dataFim);
+    if (instanciaDatepickerPlanoFim.setInputValue) instanciaDatepickerPlanoFim.setInputValue();
+  }
+}
+
+function formatarDataISO(data) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const dia = String(data.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
 
 function mostrarLoginAdmin() {
   document.getElementById('tela-login').classList.remove('oculto');
@@ -115,6 +172,7 @@ function trocarAba(aba) {
     carregarStreamingsParaSelect('select-plano-streaming', () => {});
     prepararFormularioPlano();
     carregarPlanosGeral();
+    recalcularDataFimPlano();
   }
   if (aba === 'configuracoes') carregarConfiguracoes();
   if (aba === 'financeiro') carregarFinanceiro();
@@ -426,9 +484,27 @@ async function carregarPlanosGeral() {
       <td>${p.dataFim ? formatarData(p.dataFim) : 'Vigente'}</td>
       <td class="mono">${formatarMoeda(p.valorContratado)}</td>
       <td class="mono">${formatarMoeda(p.valorSemDesconto)}</td>
-      <td>${p.parcelas}x</td>
+      <td>${formatarParcelas(p)}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="6" class="vazio">Nenhum plano cadastrado ainda.</td></tr>';
+}
+
+/**
+ * Formata a coluna Parcelas: "1x" para pagamento único, ou
+ * "6x (2 de 6)" quando parcelado, mostrando em qual parcela o plano está
+ * hoje (baseado em quantos meses se passaram desde a data de início).
+ */
+function formatarParcelas(p) {
+  const parcelas = Number(p.parcelas) || 1;
+  if (parcelas <= 1) return '1x';
+
+  const inicio = new Date(p.dataInicio);
+  const hoje = new Date();
+  let parcelaAtual = (hoje.getFullYear() - inicio.getFullYear()) * 12 + (hoje.getMonth() - inicio.getMonth()) + 1;
+  if (parcelaAtual < 1) parcelaAtual = 1;
+  if (parcelaAtual > parcelas) parcelaAtual = parcelas;
+
+  return `${parcelas}x (${parcelaAtual} de ${parcelas})`;
 }
 
 async function salvarPlano(evento) {
@@ -445,7 +521,7 @@ async function salvarPlano(evento) {
   };
   const resultado = await chamarBackend('criarPlano', { plano: dados });
   exibirToast(resultado.mensagem || (resultado.sucesso ? 'Plano criado! O plano anterior (se existia) foi encerrado automaticamente.' : 'Erro ao salvar.'), resultado.sucesso ? 'sucesso' : 'erro');
-  if (resultado.sucesso) { evento.target.reset(); carregarPlanosGeral(); }
+  if (resultado.sucesso) { evento.target.reset(); recalcularDataFimPlano(); carregarPlanosGeral(); }
 }
 
 /* ============================== CONFIGURAÇÕES ============================== */

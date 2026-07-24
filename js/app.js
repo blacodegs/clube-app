@@ -62,7 +62,6 @@ function exibirToast(mensagem, tipo = 'sucesso') {
 }
 
 async function carregarDashboard() {
-  const container = document.getElementById('conteudo-dashboard');
   try {
     const resultado = await chamarBackend('dashboardUsuario');
     if (!resultado.sucesso) { exibirToast(resultado.mensagem, 'erro'); return; }
@@ -70,24 +69,36 @@ async function carregarDashboard() {
     renderizarResumo(resultado);
     renderizarStreamings(resultado);
     renderizarPagamento(resultado);
+    renderizarRepasses(resultado);
   } catch (erro) {
-    container.innerHTML = '<div class="vazio">Não foi possível carregar seus dados agora.</div>';
+    document.getElementById('grade-resumo').innerHTML = '<div class="vazio">Não foi possível carregar seus dados agora.</div>';
   }
 }
 
 function renderizarResumo(d) {
+  const anoAtual = new Date().getFullYear();
+  const emAberto = d.souPagante ? Math.max(0, d.valorEmAberto) : d.valorEmAberto;
+
   document.getElementById('grade-resumo').innerHTML = `
     <div class="cartao-resumo destaque">
-      <div class="rotulo">Valor mensal (com divisão)</div>
+      <div class="rotulo">Você paga dividindo</div>
       <div class="valor mono">${formatarMoeda(d.totalMensalComDivisao)}</div>
     </div>
+    <div class="cartao-resumo">
+      <div class="rotulo">Sozinho, seria</div>
+      <div class="valor mono">${formatarMoeda(d.totalMensalSemDivisao)}</div>
+    </div>
     <div class="cartao-resumo positivo">
-      <div class="rotulo">Economia mensal estimada</div>
+      <div class="rotulo">Sua economia no mês</div>
       <div class="valor mono">${formatarMoeda(d.economiaMensal)}</div>
     </div>
-    <div class="cartao-resumo ${d.valorEmAberto > 0 ? 'alerta' : ''}">
-      <div class="rotulo">Valor em aberto</div>
-      <div class="valor mono">${formatarMoeda(d.valorEmAberto)}</div>
+    <div class="cartao-resumo positivo">
+      <div class="rotulo">Já economizou em ${anoAtual}</div>
+      <div class="valor mono">${formatarMoeda(d.economiaAnual)}</div>
+    </div>
+    <div class="cartao-resumo ${emAberto > 0 ? 'alerta' : ''}">
+      <div class="rotulo">Em aberto</div>
+      <div class="valor mono">${formatarMoeda(emAberto)}</div>
     </div>
     <div class="cartao-resumo">
       <div class="rotulo">Próximo vencimento</div>
@@ -133,6 +144,23 @@ function renderizarStreamings(d) {
 
 function renderizarPagamento(d) {
   const secao = document.getElementById('secao-pagamento');
+
+  // Usuário pagante que pagou mais direto à plataforma do que devia pela
+  // divisão: em vez de cobrança, mostramos que ele tem crédito a receber.
+  if (d.creditoAReceberMes > 0) {
+    secao.innerHTML = `
+      <div class="painel-pagamento">
+        <div class="lado-info" style="border-right:none;">
+          <div class="rotulo" style="color:var(--cor-texto-muted); font-size:12px; text-transform:uppercase; letter-spacing:1px;">Você está no azul 🎉</div>
+          <p style="margin-top:14px; line-height:1.6;">
+            Você pagou <strong>${formatarMoeda(d.valorPagoDiretoMes)}</strong> direto à plataforma, e o valor devido da sua participação na divisão é de <strong>${formatarMoeda(d.valorDevidoDivisaoBrutoMes)}</strong>.
+            Ou seja: você deve <strong style="color:var(--cor-accent);">receber ${formatarMoeda(d.creditoAReceberMes)}</strong> de volta.
+          </p>
+        </div>
+      </div>`;
+    return;
+  }
+
   if (!d.pendentes || d.pendentes.length === 0) {
     secao.innerHTML = '<div class="vazio">Nenhum pagamento pendente no momento. Tudo em dia! 🎉</div>';
     return;
@@ -149,9 +177,6 @@ function renderizarPagamento(d) {
         <div style="color:var(--cor-texto-muted); font-size:13.5px;">Vencimento: ${formatarData(pendente.vencimento)}</div>
         ${emAtraso ? `<div style="color:var(--cor-vermelho); font-size:13px; margin-top:6px;">Em atraso há ${pendente.diasAtraso} dia(s) — multa e juros já aplicados.</div>` : ''}
         <div class="aviso-multa"><strong>Atenção:</strong> pagamentos em atraso têm multa de 2% + juros de 1% ao mês, proporcional aos dias de atraso.</div>
-        <button class="btn btn-secundario btn-bloco" style="margin-top:18px;" onclick="informarPagamento('${pendente.id}')" ${pendente.informouPagamento ? 'disabled' : ''}>
-          ${pendente.informouPagamento ? 'Pagamento informado — aguardando confirmação' : 'Já paguei, informar pagamento'}
-        </button>
       </div>
       <div class="lado-qr">
         <div id="qrcode-canvas"></div>
@@ -166,6 +191,27 @@ function renderizarPagamento(d) {
   `;
 }
 
+/**
+ * Só o administrador vê esta lista: quanto ele deve repassar de volta a
+ * cada usuário que pagou mais direto às plataformas do que devia pela
+ * divisão (ver renderizarPagamento acima, mesma lógica por usuário).
+ */
+function renderizarRepasses(d) {
+  const secao = document.getElementById('secao-repasses');
+  if (!secao) return;
+  const lista = d.creditosParaRepassar || [];
+  if (d.usuario.acesso !== 'administrador' || lista.length === 0) {
+    secao.classList.add('oculto');
+    return;
+  }
+  secao.classList.remove('oculto');
+  document.getElementById('corpo-repasses').innerHTML = lista.map(c => `
+    <tr>
+      <td>${c.nome}</td>
+      <td class="valor mono">${formatarMoeda(c.valor)}</td>
+    </tr>`).join('');
+}
+
 async function gerarQrCode(idExtrato) {
   try {
     const resultado = await chamarBackend('gerarPix', { idExtrato });
@@ -177,6 +223,9 @@ async function gerarQrCode(idExtrato) {
 
     document.getElementById('bloco-copia-cola').classList.remove('oculto');
     document.getElementById('pix-copia-cola-texto').value = resultado.payload;
+
+    // Gerar o QR já marca o pagamento como informado no back-end.
+    carregarExtrato();
   } catch (erro) {
     exibirToast('Erro ao gerar Pix: ' + erro.message, 'erro');
   }
@@ -189,23 +238,13 @@ function copiarPix() {
   exibirToast('Código Pix copiado!');
 }
 
-async function informarPagamento(idExtrato) {
-  try {
-    const resultado = await chamarBackend('informarPagamento', { idExtrato });
-    exibirToast(resultado.mensagem, resultado.sucesso ? 'sucesso' : 'erro');
-    if (resultado.sucesso) { carregarDashboard(); carregarExtrato(); }
-  } catch (erro) {
-    exibirToast('Erro: ' + erro.message, 'erro');
-  }
-}
-
 async function carregarExtrato() {
   const corpo = document.getElementById('corpo-extrato');
   try {
     const resultado = await chamarBackend('extratoUsuario');
     if (!resultado.sucesso) return;
     if (resultado.extrato.length === 0) {
-      corpo.innerHTML = `<tr><td colspan="5" class="vazio">Nenhum lançamento no seu extrato ainda.</td></tr>`;
+      corpo.innerHTML = `<tr><td colspan="6" class="vazio">Nenhum lançamento no seu extrato ainda.</td></tr>`;
       return;
     }
     corpo.innerHTML = resultado.extrato.map(r => {
@@ -216,12 +255,13 @@ async function carregarExtrato() {
       return `<tr>
         <td>${formatarData(r.vencimento)}</td>
         <td class="valor mono">${formatarMoeda(r.valorDevidoInicial)}</td>
+        <td class="valor mono">${formatarMoeda(r.abatimento || 0)}</td>
         <td class="valor mono">${formatarMoeda(r.encargos || 0)}</td>
         <td class="valor mono">${formatarMoeda(r.valorTotal)}</td>
         <td>${tag}</td>
       </tr>`;
     }).join('');
   } catch (erro) {
-    corpo.innerHTML = `<tr><td colspan="5" class="vazio">Erro ao carregar extrato.</td></tr>`;
+    corpo.innerHTML = `<tr><td colspan="6" class="vazio">Erro ao carregar extrato.</td></tr>`;
   }
 }

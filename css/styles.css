@@ -88,7 +88,7 @@ a:hover{ color: var(--cor-accent-forte); }
 }
 .nav-abas button{
   border:none; background: transparent; color: var(--cor-texto-muted); box-sizing: border-box;
-  margin:0 !important; padding: 10px 16px !important; height: auto !important;
+  margin:0 !important; padding: 3px 16px !important; height: auto !important;
   border-radius: var(--raio-pilula); font-weight:700; cursor:pointer;
   font-family: var(--fonte-base); font-size:11px; text-transform: uppercase; letter-spacing: .08em;
   transition: background .15s ease, color .15s ease; line-height: 1.4 !important;
@@ -114,7 +114,7 @@ a:hover{ color: var(--cor-accent-forte); }
 .secao-titulo p{ color: var(--cor-texto-muted-2); font-size: 13px; margin:4px 0 0; }
 
 /* ---------- Cartões de resumo ---------- */
-.grade-resumo{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grade-resumo{ display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
 .cartao-resumo{
   background: var(--cor-superficie); border:1px solid var(--cor-borda); border-radius: var(--raio-card);
   padding: 22px; position:relative; overflow:hidden;

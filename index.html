@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clube de Assinaturas — Minha Conta</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clube de Assinaturas — Minha Conta</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-<link rel="stylesheet" href="css/styles.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
 
@@ -86,6 +87,21 @@
       </div>
     </section>
 
+    <section class="secao oculto" id="secao-repasses">
+      <div class="secao-titulo">
+        <div>
+          <h2>Repasses pendentes</h2>
+          <p>Quanto você deve devolver a quem pagou direto às plataformas</p>
+        </div>
+      </div>
+      <table class="tabela-extrato">
+        <thead>
+          <tr><th>Usuário</th><th>Valor a repassar</th></tr>
+        </thead>
+        <tbody id="corpo-repasses"></tbody>
+      </table>
+    </section>
+
     <section class="secao">
       <div class="secao-titulo">
         <div>
@@ -95,10 +111,10 @@
       </div>
       <table class="tabela-extrato">
         <thead>
-          <tr><th>Vencimento</th><th>Valor devido</th><th>Juros</th><th>Total</th><th>Situação</th></tr>
+          <tr><th>Vencimento</th><th>Valor devido</th><th>Abatimento</th><th>Juros</th><th>Total</th><th>Situação</th></tr>
         </thead>
         <tbody id="corpo-extrato">
-          <tr><td colspan="5" class="carregando">Carregando...</td></tr>
+          <tr><td colspan="6" class="carregando">Carregando...</td></tr>
         </tbody>
       </table>
     </section>
