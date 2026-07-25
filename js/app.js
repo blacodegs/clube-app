@@ -200,7 +200,7 @@ function renderizarPagamento(d) {
 function renderizarRepasses(d) {
   const secao = document.getElementById('secao-repasses');
   if (!secao) return;
-  const lista = d.creditosParaRepassar || [];
+  const lista = (d.creditosParaRepassar || []).filter(c => c && c.valor && c.valor > 0);
   if (d.usuario.acesso !== 'administrador' || lista.length === 0) {
     secao.classList.add('oculto');
     return;
