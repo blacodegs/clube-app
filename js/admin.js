@@ -5,6 +5,7 @@
  */
 let usuariosCache = [];
 let streamingsCache = [];
+let planosCache = [];
 
 const ICONE_EDITAR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 const ICONE_EXCLUIR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
@@ -62,12 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   instanciaDatepickerPlanoFim = M.Datepicker.getInstance(document.getElementById('form-plano-data-fim'));
+  instanciaDatepickerPlanoInicio = M.Datepicker.getInstance(document.getElementById('form-plano-data-inicio'));
   const inputParcelas = document.getElementById('form-plano-parcelas');
   if (inputParcelas) inputParcelas.addEventListener('input', recalcularDataFimPlano);
   recalcularDataFimPlano();
 });
 
 let instanciaDatepickerPlanoFim = null;
+let instanciaDatepickerPlanoInicio = null;
 
 /**
  * Quando PARCELAS > 1, o campo "Data de fim" fica travado e é calculado
@@ -469,14 +472,13 @@ async function carregarPlanosGeral() {
     streamingsCache = r.streamings || [];
   }
   const resultado = await chamarBackend('listarPlanos', {});
-  const planos = resultado.planos || [];
+  planosCache = resultado.planos || [];
 
-  document.getElementById('corpo-tabela-planos').innerHTML = planos.map(p => {
+  document.getElementById('corpo-tabela-planos').innerHTML = planosCache.map(p => {
     const streaming = streamingsCache.find(s => s.id === p.idStreaming);
     const logoHtml = streaming && streaming.urlLogo
       ? `<img src="${streaming.urlLogo}" style="height:22px;vertical-align:middle;margin-right:8px;">`
       : '';
-    const nomeStreaming = streaming ? streaming.streaming : '(streaming removido)';
     return `
     <tr>
       <td>${logoHtml}</td>
@@ -485,8 +487,9 @@ async function carregarPlanosGeral() {
       <td class="mono">${formatarMoeda(p.valorContratado)}</td>
       <td class="mono">${formatarMoeda(p.valorSemDesconto)}</td>
       <td>${formatarParcelas(p)}</td>
+      <td><button class="link-acao" onclick="editarPlano('${p.id}')">Editar</button></td>
     </tr>`;
-  }).join('') || '<tr><td colspan="6" class="vazio">Nenhum plano cadastrado ainda.</td></tr>';
+  }).join('') || '<tr><td colspan="7" class="vazio">Nenhum plano cadastrado ainda.</td></tr>';
 }
 
 /**
@@ -507,8 +510,56 @@ function formatarParcelas(p) {
   return `${parcelas}x (${parcelaAtual} de ${parcelas})`;
 }
 
+function editarPlano(id) {
+  const p = planosCache.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('titulo-form-plano').textContent = 'Editar plano de pagamento';
+  document.getElementById('form-plano-id').value = p.id;
+  document.getElementById('select-plano-streaming').value = p.idStreaming;
+  document.getElementById('form-plano-valor-contratado').value = p.valorContratado;
+  document.getElementById('form-plano-valor-sem-desconto').value = p.valorSemDesconto;
+  document.getElementById('form-plano-parcelas').value = p.parcelas;
+  document.getElementById('form-plano-pagante').value = p.idPagante || '';
+
+  const dataInicio = new Date(p.dataInicio);
+  const isoInicio = formatarDataISO(dataInicio);
+  document.getElementById('form-plano-data-inicio').value = isoInicio;
+  if (instanciaDatepickerPlanoInicio) {
+    instanciaDatepickerPlanoInicio.setDate(dataInicio);
+    if (instanciaDatepickerPlanoInicio.setInputValue) instanciaDatepickerPlanoInicio.setInputValue();
+  }
+
+  if (p.dataFim) {
+    const dataFim = new Date(p.dataFim);
+    document.getElementById('form-plano-data-fim').value = formatarDataISO(dataFim);
+    if (instanciaDatepickerPlanoFim) {
+      instanciaDatepickerPlanoFim.setDate(dataFim);
+      if (instanciaDatepickerPlanoFim.setInputValue) instanciaDatepickerPlanoFim.setInputValue();
+    }
+  } else {
+    document.getElementById('form-plano-data-fim').value = '';
+  }
+
+  // Reaplica a trava/cálculo automático da data de fim conforme as parcelas.
+  recalcularDataFimPlano();
+}
+
+function limparFormPlano() {
+  document.getElementById('titulo-form-plano').textContent = 'Novo plano de pagamento';
+  document.getElementById('form-plano-id').value = '';
+  document.getElementById('form-plano-valor-contratado').value = '';
+  document.getElementById('form-plano-valor-sem-desconto').value = '';
+  document.getElementById('form-plano-parcelas').value = 1;
+  document.getElementById('form-plano-data-inicio').value = '';
+  document.getElementById('form-plano-data-fim').value = '';
+  document.getElementById('form-plano-pagante').value = '';
+  recalcularDataFimPlano();
+}
+
 async function salvarPlano(evento) {
   evento.preventDefault();
+  const id = document.getElementById('form-plano-id').value;
   const idStreaming = document.getElementById('select-plano-streaming').value;
   const dados = {
     idStreaming,
@@ -519,9 +570,14 @@ async function salvarPlano(evento) {
     dataFim: document.getElementById('form-plano-data-fim').value || null,
     idPagante: document.getElementById('form-plano-pagante').value
   };
-  const resultado = await chamarBackend('criarPlano', { plano: dados });
-  exibirToast(resultado.mensagem || (resultado.sucesso ? 'Plano criado! O plano anterior (se existia) foi encerrado automaticamente.' : 'Erro ao salvar.'), resultado.sucesso ? 'sucesso' : 'erro');
-  if (resultado.sucesso) { evento.target.reset(); recalcularDataFimPlano(); carregarPlanosGeral(); }
+
+  const resultado = id
+    ? await chamarBackend('atualizarPlano', { id, plano: dados })
+    : await chamarBackend('criarPlano', { plano: dados });
+
+  const mensagemPadrao = id ? 'Plano atualizado!' : 'Plano criado! O plano anterior (se existia) foi encerrado automaticamente.';
+  exibirToast(resultado.mensagem || (resultado.sucesso ? mensagemPadrao : 'Erro ao salvar.'), resultado.sucesso ? 'sucesso' : 'erro');
+  if (resultado.sucesso) { limparFormPlano(); carregarPlanosGeral(); }
 }
 
 /* ============================== CONFIGURAÇÕES ============================== */
@@ -552,7 +608,7 @@ async function carregarFinanceiro() {
   document.getElementById('corpo-tabela-financeiro').innerHTML = resultado.extrato.map(r => {
     let tag = '<span class="tag tag-pendente">Pendente</span>';
     if (r.pago) tag = '<span class="tag tag-pago">Pago</span>';
-    else if (r.informouPagamento) tag = '<span class="tag tag-aguardando">Informou pagamento</span>';
+    else if (r.informouPagamento) tag = '<span class="tag tag-aguardando">Gerou QR Code</span>';
     const quandoInformadoAttr = (!r.pago && r.informouPagamento) ? `'${r.quandoInformou}'` : 'null';
     return `
     <tr>

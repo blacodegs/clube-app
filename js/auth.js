@@ -83,9 +83,13 @@ async function iniciarLoginGoogle(aoAutenticar, aoFalhar) {
     client_id: GOOGLE_CLIENT_ID,
     callback: callback
   });
+  const containerBotao = document.getElementById('google-login-btn');
+  // Largura fixa (320) estoura em telas estreitas; usa a largura real
+  // disponível no container, limitada a 320px.
+  const larguraBotao = Math.min(320, containerBotao.clientWidth || 320);
   google.accounts.id.renderButton(
-    document.getElementById('google-login-btn'),
-    { theme: 'filled_black', size: 'large', shape: 'pill', text: 'continue_with', width: 320 }
+    containerBotao,
+    { theme: 'filled_black', size: 'large', shape: 'pill', text: 'continue_with', width: larguraBotao }
   );
 }
 

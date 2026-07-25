@@ -72,10 +72,12 @@
         </div>
         <div class="painel">
           <h3>Usuários cadastrados</h3>
+          <div class="tabela-scroll">
           <table class="tabela-admin">
             <thead><tr><th>Nome</th><th>E-mail</th><th>Acesso</th><th></th></tr></thead>
             <tbody id="corpo-tabela-usuarios"><tr><td colspan="4" class="carregando">Carregando...</td></tr></tbody>
           </table>
+          </div>
         </div>
       </div>
     </section>
@@ -100,10 +102,12 @@
         </div>
         <div class="painel">
           <h3>Streamings cadastrados</h3>
+          <div class="tabela-scroll">
           <table class="tabela-admin">
             <thead><tr><th>Streaming</th><th>Plano</th><th>Dispositivos</th><th>Vagas</th><th></th></tr></thead>
             <tbody id="corpo-tabela-streamings"><tr><td colspan="5" class="carregando">Carregando...</td></tr></tbody>
           </table>
+          </div>
         </div>
       </div>
     </section>
@@ -125,9 +129,10 @@
     <section class="aba-admin oculto" id="aba-planos">
       <div class="grade-admin">
         <div class="painel">
-          <h3>Novo plano de pagamento</h3>
+          <h3 id="titulo-form-plano">Novo plano de pagamento</h3>
           <div class="campo"><label>Streaming</label><select id="select-plano-streaming" class="browser-default"></select></div>
           <form onsubmit="salvarPlano(event)">
+            <input type="hidden" id="form-plano-id">
             <div class="campo"><label>Valor contratado (com desconto)</label><input type="number" step="0.01" id="form-plano-valor-contratado" required></div>
             <div class="campo"><label>Valor sem desconto (tabela)</label><input type="number" step="0.01" id="form-plano-valor-sem-desconto"></div>
             <div class="campo"><label>Parcelas</label><input type="number" min="1" value="1" id="form-plano-parcelas"></div>
@@ -135,15 +140,18 @@
             <div class="campo"><label>Data de fim (calculada automaticamente se parcelado)</label><input type="text" class="datepicker" id="form-plano-data-fim"></div>
             <div class="campo"><label>Pagante (titular da conta)</label><select id="form-plano-pagante" class="browser-default"></select></div>
             <button class="btn btn-primario btn-bloco" type="submit">Salvar plano</button>
+            <button class="btn btn-secundario btn-bloco" type="button" style="margin-top:8px;" onclick="limparFormPlano()">Limpar</button>
           </form>
           <p style="color:var(--cor-texto-muted); font-size:12px; margin-top:10px;">Ao criar um novo plano, o plano vigente anterior deste streaming é encerrado automaticamente um dia antes do novo início.</p>
         </div>
         <div class="painel">
           <h3>Histórico de planos</h3>
+          <div class="tabela-scroll">
           <table class="tabela-admin">
-            <thead><tr><th>Streaming</th><th>Início</th><th>Fim</th><th>Valor contratado</th><th>Valor sem desconto</th><th>Parcelas</th></tr></thead>
-            <tbody id="corpo-tabela-planos"><tr><td colspan="6" class="carregando">Carregando...</td></tr></tbody>
+            <thead><tr><th>Streaming</th><th>Início</th><th>Fim</th><th>Valor contratado</th><th>Valor sem desconto</th><th>Parcelas</th><th></th></tr></thead>
+            <tbody id="corpo-tabela-planos"><tr><td colspan="7" class="carregando">Carregando...</td></tr></tbody>
           </table>
+          </div>
         </div>
       </div>
     </section>
@@ -159,10 +167,12 @@
       </div>
       <div class="painel">
         <h3>Extrato geral</h3>
-        <table class="tabela-admin">
+        <div class="tabela-scroll">
+          <table class="tabela-admin">
           <thead><tr><th>Usuário</th><th>Vencimento</th><th>Valor devido</th><th>Juros</th><th>Total</th><th>Situação</th><th></th></tr></thead>
           <tbody id="corpo-tabela-financeiro"><tr><td colspan="7" class="carregando">Carregando...</td></tr></tbody>
         </table>
+          </div>
       </div>
     </section>
 

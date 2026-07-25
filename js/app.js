@@ -118,6 +118,7 @@ function renderizarStreamings(d) {
       <div class="ticket-corpo">
         <div class="nome">${s.nome}</div>
         <div class="plano">${s.plano || ''}</div>
+        ${s.valorSemDesconto ? `<div class="valor-riscado">${formatarMoeda(s.valorSemDesconto)}</div>` : ''}
         <div class="valor-linha"><span class="valor mono">${formatarMoeda(s.valorMensal)}</span><span class="por">/ mês</span></div>
         <div class="cotas">${s.minhasCotas} de ${s.totalCotas} cota(s) da assinatura</div>
       </div>
