@@ -41,10 +41,13 @@
       </a>
     </nav>
 
-    <div class="perfil">
-      <div class="avatar" id="avatar-iniciais"></div>
-      <span id="nome-usuario"></span>
-      <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
+    <div class="perfil" id="perfil">
+      <div class="avatar" id="avatar-iniciais" role="button" tabindex="0" aria-label="Menu da conta"
+           onclick="alternarMenuPerfil()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();alternarMenuPerfil();}"></div>
+      <div class="perfil-opcoes" id="perfil-opcoes">
+        <span id="nome-usuario"></span>
+        <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
+      </div>
     </div>
   </header>
 

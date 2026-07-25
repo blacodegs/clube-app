@@ -41,11 +41,14 @@
       <button id="botao-aba-configuracoes" onclick="trocarAba('configuracoes')">Config</button>
     </nav>
 
-    <div class="perfil">
-      <div class="avatar" id="avatar-iniciais"></div>
-      <span id="nome-usuario"></span>
-      <a href="index.html" style="text-decoration:none;"><button class="btn-sair">Minha Conta</button></a>
-      <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
+    <div class="perfil" id="perfil">
+      <div class="avatar" id="avatar-iniciais" role="button" tabindex="0" aria-label="Menu da conta"
+           onclick="alternarMenuPerfil()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();alternarMenuPerfil();}"></div>
+      <div class="perfil-opcoes" id="perfil-opcoes">
+        <span id="nome-usuario"></span>
+        <a href="index.html" style="text-decoration:none;"><button class="btn-sair">Minha Conta</button></a>
+        <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
+      </div>
     </div>
   </header>
 

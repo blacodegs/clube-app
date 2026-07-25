@@ -266,3 +266,18 @@ async function carregarExtrato() {
     corpo.innerHTML = `<tr><td colspan="6" class="vazio">Erro ao carregar extrato.</td></tr>`;
   }
 }
+
+/**
+ * No celular, o avatar vira um botão de menu que revela nome + ações
+ * (fica escondido em telas maiores via CSS, onde tudo já aparece inline).
+ */
+function alternarMenuPerfil() {
+  const menu = document.getElementById('perfil-opcoes');
+  if (menu) menu.classList.toggle('aberto');
+}
+document.addEventListener('click', (evento) => {
+  const perfil = document.getElementById('perfil');
+  const menu = document.getElementById('perfil-opcoes');
+  if (!perfil || !menu || !menu.classList.contains('aberto')) return;
+  if (!perfil.contains(evento.target)) menu.classList.remove('aberto');
+});
