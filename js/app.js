@@ -85,11 +85,11 @@ function renderizarResumo(d) {
 
   document.getElementById('grade-resumo').innerHTML = `
     <div class="cartao-resumo destaque">
-      <div class="rotulo">Você paga dividindo</div>
+      <div class="rotulo">Aqui você paga apenas</div>
       <div class="valor mono">${formatarMoeda(d.totalMensalComDivisao)}</div>
     </div>
     <div class="cartao-resumo">
-      <div class="rotulo">Sozinho, seria</div>
+      <div class="rotulo">Olha quanto você pagaria sozinho</div>
       <div class="valor mono">${formatarMoeda(d.totalMensalSemDivisao)}</div>
     </div>
     <div class="cartao-resumo positivo">
@@ -105,7 +105,7 @@ function renderizarResumo(d) {
       <div class="valor mono">${formatarMoeda(emAberto)}</div>
     </div>
     <div class="cartao-resumo">
-      <div class="rotulo">Próximo vencimento</div>
+      <div class="rotulo">Data de vencimento</div>
       <div class="valor mono">${formatarData(d.proximoVencimento)}</div>
     </div>
   `;

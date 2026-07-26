@@ -222,6 +222,10 @@ a:hover{ color: var(--cor-accent-forte); }
 .tabela-extrato th, .tabela-extrato td{ padding: 12px 16px; text-align:left; font-size:13px; border-bottom:1px solid var(--cor-borda); }
 .tabela-extrato th{ color: var(--cor-texto-muted); font-weight:700; text-transform:uppercase; font-size:10px; letter-spacing: .07em; }
 .tabela-extrato tr:last-child td{ border-bottom:none; }
+/* Card Cobranças – responsivo */
+.card-cobrancas { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.card-cobrancas-texto { flex: 1 1 auto; }
+.btn-cobrancas { flex: 0 0 auto; max-width: 260px; }
 
 .tag{ font-size:10px; padding:4px 11px; border-radius: var(--raio-pilula); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
 .tag-pago{ background: rgba(113,184,242,.15); color: var(--cor-accent); }
@@ -246,6 +250,7 @@ a:hover{ color: var(--cor-accent-forte); }
 .grade-admin{ display:grid; grid-template-columns: minmax(0,320px) minmax(0,1fr); gap: 24px; align-items:flex-start; }
 .painel{ background: var(--cor-superficie); border:1px solid var(--cor-borda); border-radius: var(--raio-card); padding: 20px; min-width:0; }
 .painel h3{ margin: 0 0 16px; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color: var(--cor-texto-muted); }
+.painel .btn-primario { width: 100% !important; max-width: 260px !important; white-space: nowrap !important; }
 .campo{ margin-bottom: 14px; }
 .campo label{ display:block; font-size: 11px; color: var(--cor-texto-muted); margin-bottom: 6px; text-transform:uppercase; letter-spacing:.06em; }
 .campo input, .campo select, .campo textarea{
@@ -265,6 +270,7 @@ a:hover{ color: var(--cor-accent-forte); }
 .tabela-admin th, .tabela-admin td{ padding: 10px 14px; border-bottom:1px solid var(--cor-borda); font-size:13px; text-align:left; }
 .tabela-admin th{ color:var(--cor-texto-muted); font-size:10px; text-transform:uppercase; letter-spacing:.07em; }
 .tabela-admin tr:hover td{ background: rgba(255,255,255,.03); }
+.tabela-admin .col-situacao { white-space: nowrap; min-width: 110px; }
 .link-acao{ background:none; border:none; color: var(--cor-accent); cursor:pointer; font-size:12px; font-weight:700; padding:0; text-transform:uppercase; letter-spacing:.04em; }
 .link-acao.perigo{ color: var(--cor-erro); }
 
@@ -357,6 +363,7 @@ a:hover{ color: var(--cor-accent-forte); }
   .cartao-resumo .valor{ font-size:22px; }
   .grade-tickets{ grid-template-columns: 1fr; }
   .painel{ padding:14px; }
+  .painel .btn-primario { width: auto !important; max-width: none !important; }
   .cartao-login{ padding: 32px 20px; }
 
   /* Cards da Divisão: em telas estreitas, empilha em vez de espremer
@@ -382,6 +389,11 @@ a:hover{ color: var(--cor-accent-forte); }
   .perfil-opcoes .btn-sair{ width:100%; }
   .perfil-opcoes a{ width:100%; }
   .perfil-opcoes a .btn-sair{ width:100%; }
+  .col-situacao { min-width: 90px !important; padding: 6px 8px !important; }
+
+  .card-cobrancas { flex-direction: column; align-items: stretch; }
+  .card-cobrancas-texto { flex: 1 1 auto; }
+  .btn-cobrancas { width: 100%; max-width: 100%; }
 }
 
 /* ==========================================================================

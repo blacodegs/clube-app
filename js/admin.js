@@ -618,7 +618,7 @@ async function carregarFinanceiro() {
       <td class="mono">${formatarMoeda(r.abatimento || 0)}</td>
       <td class="mono">${formatarMoeda(r.encargos || 0)}</td>
       <td class="mono">${formatarMoeda(r.valorTotal)}</td>
-      <td>${tag}</td>
+      <td class="col-situacao">${tag}</td>
       <td>${!r.pago ? `<button class="link-acao" onclick="confirmarPagamento('${r.id}', ${r.valorTotal}, ${quandoInformadoAttr})">Confirmar recebimento</button>` : formatarData(r.dataPagamento)}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="8" class="vazio">Nenhum lançamento no extrato geral.</td></tr>';
