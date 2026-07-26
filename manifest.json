@@ -1,6 +1,6 @@
 {
   "name": "Clube de Assinaturas de streamings",
-  "short_name": "Streaming Assinaturas",
+  "short_name": "Streamings",
   "description": "Divida assinaturas de streaming de forma inteligente",
   "start_url": "/clube-app/index.html",
   "display": "standalone",
