@@ -1,0 +1,36 @@
+{
+  "name": "Clube de Assinaturas",
+  "short_name": "Clube",
+  "description": "Divida assinaturas de streaming de forma inteligente",
+  "start_url": "/clube-app/index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#71B8F2",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "images/blacodegs-165.png",
+      "sizes": "165x165",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/blacodegs-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/blacodegs-400-87.png",
+      "sizes": "400x400",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/blacodegs-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

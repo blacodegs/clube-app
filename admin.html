@@ -1,216 +1,240 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clube de Assinaturas — Administração</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-<link rel="stylesheet" href="css/styles.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clube de Assinaturas — Administração</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="images/blacodegs-192.png">
+  <meta name="theme-color" content="#71B8F2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 </head>
+
 <body>
-
-<div id="tela-login" class="tela-login">
-  <div class="cartao-login">
-    <img src="images/clube-de-assinaturas.png" alt="Clube de Assinaturas" class="logo-titulo-login">
-    <p class="subtitulo-login">Área do Administrador</p>
-    <p>Entre com a conta Google cadastrada como administrador.</p>
-    <div id="google-login-btn"></div>
-    <div class="mensagem-erro" id="mensagem-erro"></div>
-  </div>
-</div>
-
-<div id="app" class="oculto">
-  <header>
-    <div class="topo">
-      <div class="marca">
-        <img src="images/logo-streaming1.png" alt="Clube de Assinaturas" class="logo-icone-header">
-        <div>
-          <h1>Administração</h1>
-          <span>gestão do clube de assinaturas</span>
-        </div>
-      </div>
-
-      <div class="perfil" id="perfil">
-        <div class="avatar" id="avatar-iniciais" role="button" tabindex="0" aria-label="Menu da conta"
-            onclick="alternarMenuPerfil()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();alternarMenuPerfil();}"></div>
-        <div class="perfil-opcoes" id="perfil-opcoes">
-          <span id="nome-usuario"></span>
-          <a href="index.html" style="text-decoration:none;"><button class="btn-sair">Minha Conta</button></a>
-          <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
-        </div>
-      </div>
+  <div id="tela-login" class="tela-login">
+    <div class="cartao-login">
+      <img src="images/clube-de-assinaturas.png" alt="Clube de Assinaturas" class="logo-titulo-login">
+      <p class="subtitulo-login">Área do Administrador</p>
+      <p>Entre com a conta Google cadastrada como administrador.</p>
+      <div id="google-login-btn"></div>
+      <div class="mensagem-erro" id="mensagem-erro"></div>
     </div>
+  </div>
 
-    <nav class="nav-abas">
-      <button id="botao-aba-usuarios" onclick="trocarAba('usuarios')">Usuários</button>
-      <button id="botao-aba-streamings" onclick="trocarAba('streamings')">Streamings</button>
-      <button id="botao-aba-divisao" onclick="trocarAba('divisao')">Divisão</button>
-      <button id="botao-aba-planos" onclick="trocarAba('planos')">Planos</button>
-      <button id="botao-aba-financeiro" onclick="trocarAba('financeiro')">Financeiro</button>
-      <button id="botao-aba-configuracoes" onclick="trocarAba('configuracoes')">Config</button>
-    </nav>
-  </header>
+  <div id="app" class="oculto">
+    <header>
+      <div class="topo">
+        <div class="marca">
+          <img src="images/logo-streaming1.png" alt="Clube de Assinaturas" class="logo-icone-header">
+          <div>
+            <h1>Administração</h1>
+            <span>gestão do clube de assinaturas</span>
+          </div>
+        </div>
 
-  <main class="container">
+        <div class="perfil" id="perfil">
+          <div class="avatar" id="avatar-iniciais" role="button" tabindex="0" aria-label="Menu da conta"
+              onclick="alternarMenuPerfil()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();alternarMenuPerfil();}"></div>
+          <div class="perfil-opcoes" id="perfil-opcoes">
+            <span id="nome-usuario"></span>
+            <a href="index.html" style="text-decoration:none;"><button class="btn-sair">Minha Conta</button></a>
+            <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
+          </div>
+        </div>
+      </div>
 
-    <!-- USUÁRIOS -->
-    <section class="aba-admin" id="aba-usuarios">
-      <div class="grade-admin">
-        <div class="painel">
-          <h3 id="titulo-form-usuario">Novo usuário</h3>
-          <form onsubmit="salvarUsuario(event)">
-            <input type="hidden" id="form-usuario-id">
-            <div class="campo"><label>Nome</label><input id="form-usuario-nome" required></div>
-            <div class="campo"><label>E-mail (conta Google)</label><input type="email" id="form-usuario-email" required></div>
-            <div class="campo"><label>Acesso</label>
-              <select id="form-usuario-acesso" class="browser-default">
-                <option value="comum">Comum</option>
-                <option value="administrador">Administrador</option>
-              </select>
+      <nav class="nav-abas">
+        <button id="botao-aba-usuarios" onclick="trocarAba('usuarios')">Usuários</button>
+        <button id="botao-aba-streamings" onclick="trocarAba('streamings')">Streamings</button>
+        <button id="botao-aba-divisao" onclick="trocarAba('divisao')">Divisão</button>
+        <button id="botao-aba-planos" onclick="trocarAba('planos')">Planos</button>
+        <button id="botao-aba-financeiro" onclick="trocarAba('financeiro')">Financeiro</button>
+        <button id="botao-aba-configuracoes" onclick="trocarAba('configuracoes')">Config</button>
+      </nav>
+    </header>
+
+    <main class="container">
+
+      <!-- USUÁRIOS -->
+      <section class="aba-admin" id="aba-usuarios">
+        <div class="grade-admin">
+          <div class="painel">
+            <h3 id="titulo-form-usuario">Novo usuário</h3>
+            <form onsubmit="salvarUsuario(event)">
+              <input type="hidden" id="form-usuario-id">
+              <div class="campo"><label>Nome</label><input id="form-usuario-nome" required></div>
+              <div class="campo"><label>E-mail (conta Google)</label><input type="email" id="form-usuario-email" required></div>
+              <div class="campo"><label>Acesso</label>
+                <select id="form-usuario-acesso" class="browser-default">
+                  <option value="comum">Comum</option>
+                  <option value="administrador">Administrador</option>
+                </select>
+              </div>
+              <button class="btn btn-primario btn-bloco" type="submit">Salvar</button>
+              <button class="btn btn-secundario btn-bloco" type="button" style="margin-top:8px;" onclick="limparFormUsuario()">Limpar</button>
+            </form>
+          </div>
+          <div class="painel">
+            <h3>Usuários cadastrados</h3>
+            <div class="tabela-scroll">
+            <table class="tabela-admin">
+              <thead><tr><th>Nome</th><th>E-mail</th><th>Acesso</th><th></th></tr></thead>
+              <tbody id="corpo-tabela-usuarios"><tr><td colspan="4" class="carregando">Carregando...</td></tr></tbody>
+            </table>
             </div>
-            <button class="btn btn-primario btn-bloco" type="submit">Salvar</button>
-            <button class="btn btn-secundario btn-bloco" type="button" style="margin-top:8px;" onclick="limparFormUsuario()">Limpar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STREAMINGS -->
+      <section class="aba-admin oculto" id="aba-streamings">
+        <div class="grade-admin">
+          <div class="painel">
+            <h3 id="titulo-form-streaming">Novo streaming</h3>
+            <form onsubmit="salvarStreaming(event)">
+              <input type="hidden" id="form-streaming-id">
+              <div class="campo"><label>Nome</label><input id="form-streaming-nome" required></div>
+              <div class="campo"><label>Plano</label><input id="form-streaming-plano" placeholder="Ex: Premium 4K"></div>
+              <div class="campo"><label>Dispositivos</label><input id="form-streaming-dispositivos" type="number"></div>
+              <div class="campo"><label>Vagas na divisão</label><input id="form-streaming-vagas" type="number" placeholder="Ex: 5"></div>
+              <div class="campo"><label>Login</label><input id="form-streaming-login"></div>
+              <div class="campo"><label>Senha</label><input id="form-streaming-senha"></div>
+              <div class="campo"><label>URL do logo</label><input id="form-streaming-logo" placeholder="https://..."></div>
+              <button class="btn btn-primario btn-bloco" type="submit">Salvar</button>
+              <button class="btn btn-secundario btn-bloco" type="button" style="margin-top:8px;" onclick="limparFormStreaming()">Limpar</button>
+            </form>
+          </div>
+          <div class="painel">
+            <h3>Streamings cadastrados</h3>
+            <div class="tabela-scroll">
+            <table class="tabela-admin">
+              <thead><tr><th>Streaming</th><th>Plano</th><th>Dispositivos</th><th>Vagas</th><th></th></tr></thead>
+              <tbody id="corpo-tabela-streamings"><tr><td colspan="5" class="carregando">Carregando...</td></tr></tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIVISÃO / COTAS -->
+      <section class="aba-admin oculto" id="aba-divisao">
+        <div class="secao-titulo" style="margin-bottom:16px;">
+          <div>
+            <h2 style="font-size:18px; margin:0;">Divisão por streaming</h2>
+            <p style="margin:2px 0 0;">Participantes de cada assinatura e quanto cada um paga, calculado pelas cotas</p>
+          </div>
+        </div>
+        <div id="grupos-divisao">
+          <div class="carregando">Carregando...</div>
+        </div>
+      </section>
+
+      <!-- PLANOS DE PAGAMENTO -->
+      <section class="aba-admin oculto" id="aba-planos">
+        <div class="grade-admin">
+          <div class="painel">
+            <h3 id="titulo-form-plano">Novo plano de pagamento</h3>
+            <div class="campo"><label>Streaming</label><select id="select-plano-streaming" class="browser-default"></select></div>
+            <form onsubmit="salvarPlano(event)">
+              <input type="hidden" id="form-plano-id">
+              <div class="campo"><label>Valor contratado (com desconto)</label><input type="number" step="0.01" id="form-plano-valor-contratado" required></div>
+              <div class="campo"><label>Valor sem desconto (tabela)</label><input type="number" step="0.01" id="form-plano-valor-sem-desconto"></div>
+              <div class="campo"><label>Parcelas</label><input type="number" min="1" value="1" id="form-plano-parcelas"></div>
+              <div class="campo"><label>Data de início</label><input type="text" class="datepicker" id="form-plano-data-inicio" required></div>
+              <div class="campo"><label>Data de fim (calculada automaticamente se parcelado)</label><input type="text" class="datepicker" id="form-plano-data-fim"></div>
+              <div class="campo"><label>Pagante (titular da conta)</label><select id="form-plano-pagante" class="browser-default"></select></div>
+              <button class="btn btn-primario btn-bloco" type="submit">Salvar plano</button>
+              <button class="btn btn-secundario btn-bloco" type="button" style="margin-top:8px;" onclick="limparFormPlano()">Limpar</button>
+            </form>
+            <p style="color:var(--cor-texto-muted); font-size:12px; margin-top:10px;">Ao criar um novo plano, o plano vigente anterior deste streaming é encerrado automaticamente um dia antes do novo início.</p>
+          </div>
+          <div class="painel">
+            <h3>Histórico de planos</h3>
+            <div class="tabela-scroll">
+            <table class="tabela-admin">
+              <thead><tr><th>Streaming</th><th>Início</th><th>Fim</th><th>Valor contratado</th><th>Valor sem desconto</th><th>Parcelas</th><th></th></tr></thead>
+              <tbody id="corpo-tabela-planos"><tr><td colspan="7" class="carregando">Carregando...</td></tr></tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINANCEIRO -->
+      <section class="aba-admin oculto" id="aba-financeiro">
+        <div class="painel" style="margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <h3 style="margin:0;">Cobranças mensais</h3>
+            <p style="color:var(--cor-texto-muted); font-size:13px; margin:4px 0 0;">Gera um lançamento por usuário com base nas cotas e planos vigentes.</p>
+          </div>
+          <button class="btn btn-primario" onclick="gerarCobrancasMensais()">Gerar cobranças do mês</button>
+        </div>
+        <div class="painel">
+          <h3>Extrato geral</h3>
+          <div class="tabela-scroll">
+            <table class="tabela-admin">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Vencimento</th>
+                <th>Valor devido</th>
+                <th>Abatimento</th>
+                <th>Juros</th>
+                <th>Total</th>
+                <th>Situação</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="corpo-tabela-financeiro"><tr><td colspan="7" class="carregando">Carregando...</td></tr></tbody>
+          </table>
+            </div>
+        </div>
+      </section>
+
+      <!-- CONFIGURAÇÕES -->
+      <section class="aba-admin oculto" id="aba-configuracoes">
+        <div class="painel" style="max-width:420px;">
+          <h3>Configurações globais</h3>
+          <form onsubmit="salvarConfiguracoes(event)">
+            <div class="campo"><label>Dia de vencimento</label><input type="number" min="1" max="28" id="form-config-dia" required></div>
+            <div class="campo"><label>Nome do recebedor</label><input id="form-config-nome" required></div>
+            <div class="campo"><label>Chave Pix do recebedor</label><input id="form-config-pix" required></div>
+            <button class="btn btn-primario btn-bloco" type="submit">Salvar configurações</button>
           </form>
         </div>
-        <div class="painel">
-          <h3>Usuários cadastrados</h3>
-          <div class="tabela-scroll">
-          <table class="tabela-admin">
-            <thead><tr><th>Nome</th><th>E-mail</th><th>Acesso</th><th></th></tr></thead>
-            <tbody id="corpo-tabela-usuarios"><tr><td colspan="4" class="carregando">Carregando...</td></tr></tbody>
-          </table>
-          </div>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- STREAMINGS -->
-    <section class="aba-admin oculto" id="aba-streamings">
-      <div class="grade-admin">
-        <div class="painel">
-          <h3 id="titulo-form-streaming">Novo streaming</h3>
-          <form onsubmit="salvarStreaming(event)">
-            <input type="hidden" id="form-streaming-id">
-            <div class="campo"><label>Nome</label><input id="form-streaming-nome" required></div>
-            <div class="campo"><label>Plano</label><input id="form-streaming-plano" placeholder="Ex: Premium 4K"></div>
-            <div class="campo"><label>Dispositivos</label><input id="form-streaming-dispositivos" type="number"></div>
-            <div class="campo"><label>Vagas na divisão</label><input id="form-streaming-vagas" type="number" placeholder="Ex: 5"></div>
-            <div class="campo"><label>Login</label><input id="form-streaming-login"></div>
-            <div class="campo"><label>Senha</label><input id="form-streaming-senha"></div>
-            <div class="campo"><label>URL do logo</label><input id="form-streaming-logo" placeholder="https://..."></div>
-            <button class="btn btn-primario btn-bloco" type="submit">Salvar</button>
-            <button class="btn btn-secundario btn-bloco" type="button" style="margin-top:8px;" onclick="limparFormStreaming()">Limpar</button>
-          </form>
-        </div>
-        <div class="painel">
-          <h3>Streamings cadastrados</h3>
-          <div class="tabela-scroll">
-          <table class="tabela-admin">
-            <thead><tr><th>Streaming</th><th>Plano</th><th>Dispositivos</th><th>Vagas</th><th></th></tr></thead>
-            <tbody id="corpo-tabela-streamings"><tr><td colspan="5" class="carregando">Carregando...</td></tr></tbody>
-          </table>
-          </div>
-        </div>
-      </div>
-    </section>
+    </main>
+  </div>
 
-    <!-- DIVISÃO / COTAS -->
-    <section class="aba-admin oculto" id="aba-divisao">
-      <div class="secao-titulo" style="margin-bottom:16px;">
-        <div>
-          <h2 style="font-size:18px; margin:0;">Divisão por streaming</h2>
-          <p style="margin:2px 0 0;">Participantes de cada assinatura e quanto cada um paga, calculado pelas cotas</p>
-        </div>
-      </div>
-      <div id="grupos-divisao">
-        <div class="carregando">Carregando...</div>
-      </div>
-    </section>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
 
-    <!-- PLANOS DE PAGAMENTO -->
-    <section class="aba-admin oculto" id="aba-planos">
-      <div class="grade-admin">
-        <div class="painel">
-          <h3 id="titulo-form-plano">Novo plano de pagamento</h3>
-          <div class="campo"><label>Streaming</label><select id="select-plano-streaming" class="browser-default"></select></div>
-          <form onsubmit="salvarPlano(event)">
-            <input type="hidden" id="form-plano-id">
-            <div class="campo"><label>Valor contratado (com desconto)</label><input type="number" step="0.01" id="form-plano-valor-contratado" required></div>
-            <div class="campo"><label>Valor sem desconto (tabela)</label><input type="number" step="0.01" id="form-plano-valor-sem-desconto"></div>
-            <div class="campo"><label>Parcelas</label><input type="number" min="1" value="1" id="form-plano-parcelas"></div>
-            <div class="campo"><label>Data de início</label><input type="text" class="datepicker" id="form-plano-data-inicio" required></div>
-            <div class="campo"><label>Data de fim (calculada automaticamente se parcelado)</label><input type="text" class="datepicker" id="form-plano-data-fim"></div>
-            <div class="campo"><label>Pagante (titular da conta)</label><select id="form-plano-pagante" class="browser-default"></select></div>
-            <button class="btn btn-primario btn-bloco" type="submit">Salvar plano</button>
-            <button class="btn btn-secundario btn-bloco" type="button" style="margin-top:8px;" onclick="limparFormPlano()">Limpar</button>
-          </form>
-          <p style="color:var(--cor-texto-muted); font-size:12px; margin-top:10px;">Ao criar um novo plano, o plano vigente anterior deste streaming é encerrado automaticamente um dia antes do novo início.</p>
-        </div>
-        <div class="painel">
-          <h3>Histórico de planos</h3>
-          <div class="tabela-scroll">
-          <table class="tabela-admin">
-            <thead><tr><th>Streaming</th><th>Início</th><th>Fim</th><th>Valor contratado</th><th>Valor sem desconto</th><th>Parcelas</th><th></th></tr></thead>
-            <tbody id="corpo-tabela-planos"><tr><td colspan="7" class="carregando">Carregando...</td></tr></tbody>
-          </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FINANCEIRO -->
-    <section class="aba-admin oculto" id="aba-financeiro">
-      <div class="painel" style="margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;">
-        <div>
-          <h3 style="margin:0;">Cobranças mensais</h3>
-          <p style="color:var(--cor-texto-muted); font-size:13px; margin:4px 0 0;">Gera um lançamento por usuário com base nas cotas e planos vigentes.</p>
-        </div>
-        <button class="btn btn-primario" onclick="gerarCobrancasMensais()">Gerar cobranças do mês</button>
-      </div>
-      <div class="painel">
-        <h3>Extrato geral</h3>
-        <div class="tabela-scroll">
-          <table class="tabela-admin">
-          <thead>
-            <tr>
-              <th>Usuário</th>
-              <th>Vencimento</th>
-              <th>Valor devido</th>
-              <th>Abatimento</th>
-              <th>Juros</th>
-              <th>Total</th>
-              <th>Situação</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="corpo-tabela-financeiro"><tr><td colspan="7" class="carregando">Carregando...</td></tr></tbody>
-        </table>
-          </div>
-      </div>
-    </section>
-
-    <!-- CONFIGURAÇÕES -->
-    <section class="aba-admin oculto" id="aba-configuracoes">
-      <div class="painel" style="max-width:420px;">
-        <h3>Configurações globais</h3>
-        <form onsubmit="salvarConfiguracoes(event)">
-          <div class="campo"><label>Dia de vencimento</label><input type="number" min="1" max="28" id="form-config-dia" required></div>
-          <div class="campo"><label>Nome do recebedor</label><input id="form-config-nome" required></div>
-          <div class="campo"><label>Chave Pix do recebedor</label><input id="form-config-pix" required></div>
-          <button class="btn btn-primario btn-bloco" type="submit">Salvar configurações</button>
-        </form>
-      </div>
-    </section>
-
-  </main>
-</div>
-
-<script src="js/config.js"></script>
-<script src="js/api.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/admin.js"></script>
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js')
+          .then(function(registration) {
+            console.log('Service Worker registrado com sucesso:', registration);
+          })
+          .catch(function(error) {
+            console.log('Falha ao registrar Service Worker:', error);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
