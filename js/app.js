@@ -34,8 +34,12 @@ function entrarNoApp(usuario) {
   document.getElementById('avatar-iniciais').textContent = (usuario.nome || '?').trim().charAt(0).toUpperCase();
   document.getElementById('nome-usuario').textContent = usuario.nome;
 
+  // Mostra o link para admin no menu do perfil, se for administrador
+  const linkAdmin = document.getElementById('link-admin');
   if (usuario.acesso === 'administrador') {
-    document.getElementById('link-admin').classList.remove('oculto');
+    linkAdmin.classList.remove('oculto');
+  } else {
+    linkAdmin.classList.add('oculto');
   }
 
   carregarDashboard();

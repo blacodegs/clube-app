@@ -23,12 +23,24 @@
 </div>
 
 <div id="app" class="oculto">
-  <header class="topo">
-    <div class="marca">
-      <img src="images/logo-streaming1.png" alt="Clube de Assinaturas" class="logo-icone-header">
-      <div>
-        <h1>Administração</h1>
-        <span>gestão do clube de assinaturas</span>
+  <header>
+    <div class="topo">
+      <div class="marca">
+        <img src="images/logo-streaming1.png" alt="Clube de Assinaturas" class="logo-icone-header">
+        <div>
+          <h1>Administração</h1>
+          <span>gestão do clube de assinaturas</span>
+        </div>
+      </div>
+
+      <div class="perfil" id="perfil">
+        <div class="avatar" id="avatar-iniciais" role="button" tabindex="0" aria-label="Menu da conta"
+            onclick="alternarMenuPerfil()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();alternarMenuPerfil();}"></div>
+        <div class="perfil-opcoes" id="perfil-opcoes">
+          <span id="nome-usuario"></span>
+          <a href="index.html" style="text-decoration:none;"><button class="btn-sair">Minha Conta</button></a>
+          <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
+        </div>
       </div>
     </div>
 
@@ -40,16 +52,6 @@
       <button id="botao-aba-financeiro" onclick="trocarAba('financeiro')">Financeiro</button>
       <button id="botao-aba-configuracoes" onclick="trocarAba('configuracoes')">Config</button>
     </nav>
-
-    <div class="perfil" id="perfil">
-      <div class="avatar" id="avatar-iniciais" role="button" tabindex="0" aria-label="Menu da conta"
-           onclick="alternarMenuPerfil()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();alternarMenuPerfil();}"></div>
-      <div class="perfil-opcoes" id="perfil-opcoes">
-        <span id="nome-usuario"></span>
-        <a href="index.html" style="text-decoration:none;"><button class="btn-sair">Minha Conta</button></a>
-        <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
-      </div>
-    </div>
   </header>
 
   <main class="container">

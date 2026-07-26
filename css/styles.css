@@ -87,46 +87,42 @@ a:hover{ color: var(--cor-accent-forte); }
 
 /* ---------- Cabeçalho ---------- */
 .topo{
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
   padding: 18px 32px; border-bottom: 1px solid var(--cor-borda);
   background: rgba(0,0,0,.9); backdrop-filter: blur(8px);
-  position: sticky; top:0; z-index: 50;
+  position: sticky; top:0; z-index: 50; gap: 10px;
 }
-.marca{ display:flex; align-items:center; gap:12px; }
+.marca{ display:flex; align-items:center; gap:12px; flex:0 0 auto; }
 .marca h1{ font-size: 18px; margin:0; text-transform: uppercase; letter-spacing:.06em; }
 .marca span{ display:block; font-size: 11px; color: var(--cor-texto-muted); letter-spacing:1px; text-transform:uppercase; }
 .logo-icone-header{ width:36px; height:36px; border-radius:50%; object-fit:cover; flex-shrink:0; }
+
+.perfil{ display:flex; align-items:center; gap:10px; position:relative; margin-left:auto; flex-shrink:0; }
+.perfil .avatar{ width:32px; height:32px; border-radius:50%; background:var(--cor-superficie-mais-alta); border:1px solid var(--cor-borda); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; cursor:pointer; }
+.perfil-opcoes{ display:flex; align-items:center; gap:10px; }
+.perfil-opcoes #nome-usuario{ font-size:13px; color:var(--cor-texto-muted); }
+.btn-sair{ background:transparent; border:none; color:var(--cor-texto); padding:8px 18px; border-radius:var(--raio-pilula); cursor:pointer; font-family:var(--fonte-base); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; transition:background .15s ease; }
+.btn-sair:hover{ background:rgba(255,255,255,.15); }
 
 .nav-abas{
   display:flex; gap:2px; background: var(--cor-superficie); border:1px solid var(--cor-borda);
   border-radius: var(--raio-pilula); padding:3px; width: max-content; max-width:100%; min-width:0; flex-shrink:1; box-sizing: border-box;
   /* O Materialize aplica height/line-height globais a qualquer <nav>; anula aqui */
-  height: auto !important; line-height: normal !important; box-shadow: none !important;
+  height: auto !important; line-height: normal !important; box-shadow: none !important; align-self: center;
   /* Em telas estreitas, em vez de estourar a página, a barra de abas rola
      horizontalmente (padrão comum de tab bar mobile) */
-  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin: 0 auto;
 }
 .nav-abas::-webkit-scrollbar{ display:none; }
 .nav-abas button{
   border:none; background: transparent; color: var(--cor-texto-muted); box-sizing: border-box;
-  margin:0 !important; padding: 3px 16px !important; height: auto !important; flex-shrink:0; white-space: nowrap;
+  margin:0 !important; padding: 10px 16px !important; height: auto !important; flex-shrink:0; white-space: nowrap;
   border-radius: var(--raio-pilula); font-weight:700; cursor:pointer;
   font-family: var(--fonte-base); font-size:11px; text-transform: uppercase; letter-spacing: .08em;
   transition: background .15s ease, color .15s ease; line-height: 1.4 !important;
 }
 .nav-abas button:hover{ background: rgba(255,255,255,.08); color: var(--cor-texto); }
 .nav-abas button.ativo{ background: var(--cor-botao-primario-fundo); color: var(--cor-botao-primario-texto); }
-
-.perfil{ display:flex; align-items:center; gap:10px; position:relative; }
-.perfil .avatar{ width:32px; height:32px; border-radius:50%; background:var(--cor-superficie-mais-alta); border:1px solid var(--cor-borda); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; }
-.perfil-opcoes{ display:flex; align-items:center; gap:10px; }
-.btn-sair{
-  background: transparent; border:none; color: var(--cor-texto);
-  padding: 8px 18px; border-radius: var(--raio-pilula); cursor:pointer; font-family: var(--fonte-base);
-  font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
-  transition: background .15s ease;
-}
-.btn-sair:hover{ background: rgba(255,255,255,.15); }
 
 /* ---------- Container ---------- */
 .container{ max-width: 1180px; margin: 0 auto; padding: 32px; }

@@ -647,3 +647,17 @@ async function gerarCobrancasMensais() {
   exibirToast(resultado.mensagem || (resultado.sucesso ? 'Cobranças geradas!' : 'Erro ao gerar cobranças.'), resultado.sucesso ? 'sucesso' : 'erro');
   if (resultado.sucesso) carregarFinanceiro();
 }
+
+/**
+ * No celular, o avatar vira um botão de menu que revela nome + ações
+ */
+function alternarMenuPerfil() {
+  const menu = document.getElementById('perfil-opcoes');
+  if (menu) menu.classList.toggle('aberto');
+}
+document.addEventListener('click', (evento) => {
+  const perfil = document.getElementById('perfil');
+  const menu = document.getElementById('perfil-opcoes');
+  if (!perfil || !menu || !menu.classList.contains('aberto')) return;
+  if (!perfil.contains(evento.target)) menu.classList.remove('aberto');
+});

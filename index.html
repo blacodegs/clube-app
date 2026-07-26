@@ -34,25 +34,21 @@
       </div>
     </div>
 
-    <nav class="nav-abas">
-      <button class="ativo">Minha Conta</button>
-      <a id="link-admin" href="admin.html" class="oculto" style="text-decoration:none;">
-        <button>Administração</button>
-      </a>
-    </nav>
-
     <div class="perfil" id="perfil">
       <div class="avatar" id="avatar-iniciais" role="button" tabindex="0" aria-label="Menu da conta"
            onclick="alternarMenuPerfil()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();alternarMenuPerfil();}"></div>
       <div class="perfil-opcoes" id="perfil-opcoes">
         <span id="nome-usuario"></span>
+        <a id="link-admin" href="admin.html" class="oculto" style="text-decoration:none;">
+          <button class="btn-sair">Administração</button>
+        </a>
         <button class="btn-sair" onclick="encerrarSessao()">Sair</button>
       </div>
     </div>
   </header>
 
   <main class="container">
-
+    <!-- conteúdo igual ao seu, sem alterações -->
     <section class="secao">
       <div class="secao-titulo">
         <div>
@@ -124,7 +120,6 @@
       </table>
           </div>
     </section>
-
   </main>
 </div>
 
