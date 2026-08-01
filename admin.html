@@ -152,7 +152,7 @@
               <div class="campo"><label>Valor sem desconto (tabela)</label><input type="number" step="0.01" id="form-plano-valor-sem-desconto"></div>
               <div class="campo"><label>Parcelas</label><input type="number" min="1" value="1" id="form-plano-parcelas"></div>
               <div class="campo"><label>Data de início</label><input type="text" class="datepicker" id="form-plano-data-inicio" required></div>
-              <div class="campo"><label>Data de fim (calculada automaticamente se parcelado)</label><input type="text" class="datepicker" id="form-plano-data-fim"></div>
+              <div class="campo"><label>Data de fim (calculada automaticamente se parcelado)</label><input type="text" class="datepicker" id="form-plano-data-fim" disabled></div>
               <div class="campo"><label>Pagante (titular da conta)</label><select id="form-plano-pagante" class="browser-default"></select></div>
               <button class="btn btn-primario btn-bloco" type="submit">Salvar plano</button>
               <button class="btn btn-secundario btn-bloco" type="button" style="margin-top:8px;" onclick="limparFormPlano()">Limpar</button>
@@ -234,6 +234,18 @@
               <span id="spinner-confirmar" class="spinner" style="display:none;"></span>
               <span id="texto-confirmar">Confirmar</span>
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de Confirmação Genérico -->
+      <div id="modal-confirmacao" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+          <h4 id="modal-confirmacao-titulo">Confirmar ação</h4>
+          <p id="modal-confirmacao-mensagem" style="color:var(--cor-texto-muted); font-size:14px; margin:8px 0 16px;">Tem certeza que deseja realizar esta ação?</p>
+          <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:16px;">
+            <button class="btn btn-secundario" onclick="fecharModalConfirmacaoGenerica()">Cancelar</button>
+            <button class="btn btn-primario" id="btn-confirmar-generico" onclick="confirmarAcaoGenerica()">Confirmar</button>
           </div>
         </div>
       </div>

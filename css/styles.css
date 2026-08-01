@@ -446,7 +446,6 @@ td.is-selected .datepicker-day-button{ background: var(--cor-accent) !important;
   padding: 20px; backdrop-filter: blur(4px);
     box-sizing: border-box;
 }
-
 .modal-box {
     max-width: 420px; width: 100%; background: var(--cor-superficie); border: 1px solid var(--cor-borda);
     border-radius: var(--raio-card); padding: 28px; box-shadow: var(--sombra); box-sizing: border-box;

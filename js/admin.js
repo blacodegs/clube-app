@@ -12,6 +12,7 @@ const ICONE_EXCLUIR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height
 const ICONE_FECHAR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
 const DATEPICKER_OPTS = {
+  format: 'dd/mm/yyyy',
   autoClose: true,
   yearRange: 5,
   i18n: {
@@ -68,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (inputInicio) {
     const instancia = M.Datepicker.getInstance(inputInicio);
     if (instancia) {
-      // Guarda o onSelect original (se houver) e adiciona o nosso
       const onSelectOriginal = instancia.options.onSelect;
       instancia.options.onSelect = function(date) {
         if (this.el && this.el.id === 'form-plano-data-inicio') {
@@ -77,14 +77,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (onSelectOriginal) onSelectOriginal(date);
       };
     }
+
+    // Adiciona listeners para quando o usuário digitar ou sair do campo
+    inputInicio.addEventListener('change', recalcularDataFimPlano);
+    inputInicio.addEventListener('blur', recalcularDataFimPlano);
+  }
+
+  // Listener para o campo parcelas
+  const inputParcelas = document.getElementById('form-plano-parcelas');
+  if (inputParcelas) {
+    inputParcelas.addEventListener('input', recalcularDataFimPlano);
+    inputParcelas.addEventListener('change', recalcularDataFimPlano);
   }
 
   // Armazena as instâncias para uso posterior
   instanciaDatepickerPlanoFim = M.Datepicker.getInstance(document.getElementById('form-plano-data-fim'));
   instanciaDatepickerPlanoInicio = M.Datepicker.getInstance(document.getElementById('form-plano-data-inicio'));
 
-  const inputParcelas = document.getElementById('form-plano-parcelas');
-  if (inputParcelas) inputParcelas.addEventListener('input', recalcularDataFimPlano);
   recalcularDataFimPlano();
 });
 
@@ -106,25 +115,33 @@ function recalcularDataFimPlano() {
 
   const parcelas = Number(inputParcelas.value) || 1;
 
-  if (parcelas <= 1) {
-    inputFim.disabled = false;
-    return;
+  // Campo sempre desabilitado
+  inputFim.disabled = true;
+
+  // Se parcelas > 1 e data de início preenchida, calcula data de fim
+  if (parcelas > 1 && inputInicio.value) {
+    const dataInicioISO = converterDataBRparaISO(inputInicio.value);
+    if (dataInicioISO) {
+      const data = new Date(dataInicioISO);
+      if (!isNaN(data)) {
+        const dataFim = new Date(data);
+        dataFim.setMonth(dataFim.getMonth() + parcelas);
+        const dataFimBR = formatarDataBR(dataFim);
+        inputFim.value = dataFimBR;
+        if (instanciaDatepickerPlanoFim) {
+          instanciaDatepickerPlanoFim.setDate(dataFim);
+        }
+        return;
+      }
+    }
   }
 
-  inputFim.disabled = true;
-  if (!inputInicio.value) return;
-
-  const dataInicio = new Date(inputInicio.value + 'T00:00:00');
-  if (isNaN(dataInicio)) return;
-
-  const dataFim = new Date(dataInicio);
-  dataFim.setMonth(dataFim.getMonth() + parcelas);
-
-  const iso = formatarDataISO(dataFim);
-  inputFim.value = iso;
-  if (instanciaDatepickerPlanoFim) {
-    instanciaDatepickerPlanoFim.setDate(dataFim);
-    if (instanciaDatepickerPlanoFim.setInputValue) instanciaDatepickerPlanoFim.setInputValue();
+  // Se parcelas = 1, mantém o valor existente se for edição, senão limpa
+  if (parcelas === 1 && !inputFim.dataset.editando) {
+    inputFim.value = '';
+    if (instanciaDatepickerPlanoFim) {
+      instanciaDatepickerPlanoFim.setDate(null);
+    }
   }
 }
 
@@ -152,7 +169,6 @@ function converterDataBRparaISO(dataBR) {
   const dia = partes[0].padStart(2, '0');
   const mes = partes[1].padStart(2, '0');
   const ano = partes[2];
-  // Validação simples
   if (dia < 1 || dia > 31 || mes < 1 || mes > 12) return null;
   return `${ano}-${mes}-${dia}`;
 }
@@ -563,26 +579,31 @@ function editarPlano(id) {
   document.getElementById('form-plano-parcelas').value = p.parcelas;
   document.getElementById('form-plano-pagante').value = p.idPagante || '';
 
+  const inputFim = document.getElementById('form-plano-data-fim');
+  inputFim.dataset.editando = 'true';
+
+  // Data de início – formato DD/MM/AAAA
   const dataInicio = new Date(p.dataInicio);
-  const isoInicio = formatarDataISO(dataInicio);
-  document.getElementById('form-plano-data-inicio').value = isoInicio;
+  document.getElementById('form-plano-data-inicio').value = formatarDataBR(dataInicio);
   if (instanciaDatepickerPlanoInicio) {
     instanciaDatepickerPlanoInicio.setDate(dataInicio);
-    if (instanciaDatepickerPlanoInicio.setInputValue) instanciaDatepickerPlanoInicio.setInputValue();
   }
 
+  // Data de fim – se existir, exibe; senão, deixa vazio e recalcula
   if (p.dataFim) {
     const dataFim = new Date(p.dataFim);
-    document.getElementById('form-plano-data-fim').value = formatarDataISO(dataFim);
+    inputFim.value = formatarDataBR(dataFim);
     if (instanciaDatepickerPlanoFim) {
       instanciaDatepickerPlanoFim.setDate(dataFim);
-      if (instanciaDatepickerPlanoFim.setInputValue) instanciaDatepickerPlanoFim.setInputValue();
     }
   } else {
-    document.getElementById('form-plano-data-fim').value = '';
+    inputFim.value = '';
+    if (instanciaDatepickerPlanoFim) {
+      instanciaDatepickerPlanoFim.setDate(null);
+    }
   }
 
-  // Reaplica a trava/cálculo automático da data de fim conforme as parcelas.
+  // Recalcula a data de fim (se parcelas > 1)
   recalcularDataFimPlano();
 }
 
@@ -594,6 +615,7 @@ function limparFormPlano() {
   document.getElementById('form-plano-parcelas').value = 1;
   document.getElementById('form-plano-data-inicio').value = '';
   document.getElementById('form-plano-data-fim').value = '';
+  document.getElementById('form-plano-data-fim').dataset.editando = '';
   document.getElementById('form-plano-pagante').value = '';
   recalcularDataFimPlano();
 }
@@ -602,13 +624,24 @@ async function salvarPlano(evento) {
   evento.preventDefault();
   const id = document.getElementById('form-plano-id').value;
   const idStreaming = document.getElementById('select-plano-streaming').value;
+
+  const dataInicioBR = document.getElementById('form-plano-data-inicio').value;
+  const dataFimBR = document.getElementById('form-plano-data-fim').value;
+
+  const dataInicio = converterDataBRparaISO(dataInicioBR);
+  if (!dataInicio) {
+    exibirToast('Data de início inválida. Use o formato DD/MM/AAAA.', 'erro');
+    return;
+  }
+  const dataFim = dataFimBR ? converterDataBRparaISO(dataFimBR) : null;
+
   const dados = {
     idStreaming,
     valorContratado: document.getElementById('form-plano-valor-contratado').value,
     valorSemDesconto: document.getElementById('form-plano-valor-sem-desconto').value,
     parcelas: document.getElementById('form-plano-parcelas').value || 1,
-    dataInicio: document.getElementById('form-plano-data-inicio').value,
-    dataFim: document.getElementById('form-plano-data-fim').value || null,
+    dataInicio: dataInicio,
+    dataFim: dataFim,
     idPagante: document.getElementById('form-plano-pagante').value
   };
 
@@ -692,7 +725,6 @@ function confirmarPagamento(idExtrato, valorSugerido, quandoInformou) {
   if (instancia) instancia.destroy();
   M.Datepicker.init(inputData, {
     ...DATEPICKER_OPTS,
-    format: 'dd/mm/yyyy',  // formata para exibição
     defaultDate: dataInicial,
     setDefaultDate: true
   });
@@ -757,10 +789,15 @@ async function confirmarPagamentoModal() {
 }
 
 async function gerarCobrancasMensais() {
-  if (!confirm('Gerar as cobranças deste mês para todos os usuários com cotas ativas?')) return;
-  const resultado = await chamarBackend('gerarCobrancasMensais');
-  exibirToast(resultado.mensagem || (resultado.sucesso ? 'Cobranças geradas!' : 'Erro ao gerar cobranças.'), resultado.sucesso ? 'sucesso' : 'erro');
-  if (resultado.sucesso) carregarFinanceiro();
+  abrirModalConfirmacao(
+    'Gerar cobranças do mês',
+    'Esta ação irá gerar cobranças para todos os usuários com cotas ativas. As cobranças existentes serão atualizadas. Deseja continuar?',
+    async () => {
+      const resultado = await chamarBackend('gerarCobrancasMensais');
+      exibirToast(resultado.mensagem || (resultado.sucesso ? 'Cobranças geradas!' : 'Erro ao gerar cobranças.'), resultado.sucesso ? 'sucesso' : 'erro');
+      if (resultado.sucesso) carregarFinanceiro();
+    }
+  );
 }
 
 /**
@@ -776,3 +813,49 @@ document.addEventListener('click', (evento) => {
   if (!perfil || !menu || !menu.classList.contains('aberto')) return;
   if (!perfil.contains(evento.target)) menu.classList.remove('aberto');
 });
+
+// Variáveis para controle do modal genérico
+let acaoGenericaCallback = null;
+let acaoGenericaParams = null;
+
+/**
+ * Abre o modal de confirmação genérico
+ * @param {string} titulo - Título do modal
+ * @param {string} mensagem - Mensagem descritiva
+ * @param {function} callback - Função a ser executada ao confirmar (pode ser assíncrona)
+ * @param {*} params - Parâmetros opcionais para passar para o callback
+ */
+function abrirModalConfirmacao(titulo, mensagem, callback, params = null) {
+  document.getElementById('modal-confirmacao-titulo').textContent = titulo;
+  document.getElementById('modal-confirmacao-mensagem').textContent = mensagem;
+  acaoGenericaCallback = callback;
+  acaoGenericaParams = params;
+  document.getElementById('modal-confirmacao').style.display = 'flex';
+}
+
+function fecharModalConfirmacaoGenerica() {
+  document.getElementById('modal-confirmacao').style.display = 'none';
+  acaoGenericaCallback = null;
+  acaoGenericaParams = null;
+}
+
+async function confirmarAcaoGenerica() {
+  const btn = document.getElementById('btn-confirmar-generico');
+  const originalText = btn.textContent;
+
+  // Estado de carregamento
+  btn.disabled = true;
+  btn.textContent = 'Processando...';
+
+  try {
+    if (typeof acaoGenericaCallback === 'function') {
+      await acaoGenericaCallback(acaoGenericaParams);
+    }
+  } catch (erro) {
+    exibirToast('Erro ao executar ação: ' + erro.message, 'erro');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+    fecharModalConfirmacaoGenerica();
+  }
+}
