@@ -11,6 +11,22 @@ const ICONE_EDITAR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height=
 const ICONE_EXCLUIR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
 const ICONE_FECHAR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
+const DATEPICKER_OPTS = {
+  autoClose: true,
+  yearRange: 5,
+  i18n: {
+    months: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+    monthsShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+    weekdays: ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'],
+    weekdaysShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
+    weekdaysAbbrev: ['D','S','T','Q','Q','S','S'],
+    cancel: 'Cancelar',
+    clear: 'Limpar',
+    done: 'OK',
+    today: 'Hoje'
+  }
+};
+
 /** Fecha o card de "novo participante" aberto, se houver. */
 function fecharCardNovo() {
   const cardAberto = document.querySelector('.card-divisao.novo');
@@ -39,31 +55,34 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarLoginAdmin();
   }
 
-  M.Datepicker.init(document.querySelectorAll('.datepicker'), {
-    format: 'yyyy-mm-dd',
-    autoClose: true,
-    yearRange: 5,
-    onSelect: function(date) {
-      // "this" é a instância do Datepicker; this.el é o input correspondente.
-      if (this.el && this.el.id === 'form-plano-data-inicio') {
-        recalcularDataFimPlano();
-      }
-    },
-    i18n: {
-      months: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
-      monthsShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-      weekdays: ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'],
-      weekdaysShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
-      weekdaysAbbrev: ['D','S','T','Q','Q','S','S'],
-      cancel: 'Cancelar',
-      clear: 'Limpar',
-      done: 'OK',
-      today: 'Hoje'
-    }
+  // Inicializa todos os datepickers com as opções centralizadas
+  const datepickers = document.querySelectorAll('.datepicker');
+  datepickers.forEach(el => {
+    const instancia = M.Datepicker.getInstance(el);
+    if (instancia) instancia.destroy();
+    M.Datepicker.init(el, DATEPICKER_OPTS);
   });
 
+  // Aplica o callback específico para o campo data de início
+  const inputInicio = document.getElementById('form-plano-data-inicio');
+  if (inputInicio) {
+    const instancia = M.Datepicker.getInstance(inputInicio);
+    if (instancia) {
+      // Guarda o onSelect original (se houver) e adiciona o nosso
+      const onSelectOriginal = instancia.options.onSelect;
+      instancia.options.onSelect = function(date) {
+        if (this.el && this.el.id === 'form-plano-data-inicio') {
+          recalcularDataFimPlano();
+        }
+        if (onSelectOriginal) onSelectOriginal(date);
+      };
+    }
+  }
+
+  // Armazena as instâncias para uso posterior
   instanciaDatepickerPlanoFim = M.Datepicker.getInstance(document.getElementById('form-plano-data-fim'));
   instanciaDatepickerPlanoInicio = M.Datepicker.getInstance(document.getElementById('form-plano-data-inicio'));
+
   const inputParcelas = document.getElementById('form-plano-parcelas');
   if (inputParcelas) inputParcelas.addEventListener('input', recalcularDataFimPlano);
   recalcularDataFimPlano();
@@ -113,6 +132,28 @@ function formatarDataISO(data) {
   const ano = data.getFullYear();
   const mes = String(data.getMonth() + 1).padStart(2, '0');
   const dia = String(data.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
+function formatarDataBR(data) {
+  if (!data) return '';
+  const d = new Date(data);
+  if (isNaN(d)) return '';
+  const dia = String(d.getDate()).padStart(2, '0');
+  const mes = String(d.getMonth() + 1).padStart(2, '0');
+  const ano = d.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
+function converterDataBRparaISO(dataBR) {
+  if (!dataBR) return null;
+  const partes = dataBR.split('/');
+  if (partes.length !== 3) return null;
+  const dia = partes[0].padStart(2, '0');
+  const mes = partes[1].padStart(2, '0');
+  const ano = partes[2];
+  // Validação simples
+  if (dia < 1 || dia > 31 || mes < 1 || mes > 12) return null;
   return `${ano}-${mes}-${dia}`;
 }
 
@@ -624,21 +665,95 @@ async function carregarFinanceiro() {
   }).join('') || '<tr><td colspan="8" class="vazio">Nenhum lançamento no extrato geral.</td></tr>';
 }
 
-async function confirmarPagamento(idExtrato, valorSugerido, quandoInformou) {
-  const valorPago = prompt('Valor recebido:', valorSugerido);
-  if (valorPago === null) return;
+let idExtratoConfirmacao = null;
+let valorSugeridoConfirmacao = null;
 
-  // Se o usuário já informou o pagamento pelo app, usa a data que ele
-  // informou (QUANDO) em vez de perguntar — DATA PAGAMENTO <- QUANDO.
-  let dataPagamento = quandoInformou;
-  if (!dataPagamento) {
-    dataPagamento = prompt('Data do pagamento (AAAA-MM-DD):', new Date().toISOString().substring(0, 10));
-    if (dataPagamento === null) return;
+function confirmarPagamento(idExtrato, valorSugerido, quandoInformou) {
+  idExtratoConfirmacao = idExtrato;
+  valorSugeridoConfirmacao = valorSugerido;
+
+  document.getElementById('modal-valor-pago').value = valorSugerido;
+  document.getElementById('modal-id-extrato').value = idExtrato;
+
+  const inputData = document.getElementById('modal-data-pagamento');
+  let dataInicial = new Date();
+  if (quandoInformou) {
+    const data = new Date(quandoInformou);
+    if (!isNaN(data)) dataInicial = data;
+  }
+  // Exibe no formato DD/MM/AAAA
+  inputData.value = formatarDataBR(dataInicial);
+
+  // Abre o modal
+  document.getElementById('modal-confirmar-pagamento').style.display = 'flex';
+
+  // Inicializa o datepicker com formato DD/MM/AAAA
+  const instancia = M.Datepicker.getInstance(inputData);
+  if (instancia) instancia.destroy();
+  M.Datepicker.init(inputData, {
+    ...DATEPICKER_OPTS,
+    format: 'dd/mm/yyyy',  // formata para exibição
+    defaultDate: dataInicial,
+    setDefaultDate: true
+  });
+}
+
+function fecharModalConfirmacao() {
+  const btn = document.getElementById('btn-confirmar-pagamento');
+  const spinner = document.getElementById('spinner-confirmar');
+  const texto = document.getElementById('texto-confirmar');
+  btn.disabled = false;
+  spinner.style.display = 'none';
+  texto.textContent = 'Confirmar';
+  document.getElementById('modal-confirmar-pagamento').style.display = 'none';
+  idExtratoConfirmacao = null;
+  valorSugeridoConfirmacao = null;
+}
+
+async function confirmarPagamentoModal() {
+  const idExtrato = document.getElementById('modal-id-extrato').value;
+  const valorPago = document.getElementById('modal-valor-pago').value;
+  const dataInput = document.getElementById('modal-data-pagamento').value;
+
+  if (!valorPago || parseFloat(valorPago) <= 0) {
+    exibirToast('Informe um valor válido.', 'erro');
+    return;
+  }
+  if (!dataInput) {
+    exibirToast('Informe a data do pagamento.', 'erro');
+    return;
   }
 
-  const resultado = await chamarBackend('confirmarPagamento', { idExtrato, valorPago, dataPagamento });
-  exibirToast(resultado.sucesso ? 'Pagamento confirmado!' : (resultado.mensagem || 'Erro ao confirmar.'), resultado.sucesso ? 'sucesso' : 'erro');
-  if (resultado.sucesso) carregarFinanceiro();
+  const dataPagamento = converterDataBRparaISO(dataInput);
+  if (!dataPagamento) {
+    exibirToast('Data inválida. Use o formato DD/MM/AAAA.', 'erro');
+    return;
+  }
+
+  // Estado de carregamento
+  const btn = document.getElementById('btn-confirmar-pagamento');
+  const spinner = document.getElementById('spinner-confirmar');
+  const texto = document.getElementById('texto-confirmar');
+
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+  texto.textContent = 'Processando...';
+
+  try {
+    const resultado = await chamarBackend('confirmarPagamento', { idExtrato, valorPago, dataPagamento });
+    exibirToast(resultado.sucesso ? 'Pagamento confirmado!' : (resultado.mensagem || 'Erro ao confirmar.'), resultado.sucesso ? 'sucesso' : 'erro');
+    if (resultado.sucesso) {
+      fecharModalConfirmacao();
+      carregarFinanceiro();
+    }
+  } catch (erro) {
+    exibirToast('Erro ao processar: ' + erro.message, 'erro');
+  } finally {
+    // Restaura o botão
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    texto.textContent = 'Confirmar';
+  }
 }
 
 async function gerarCobrancasMensais() {

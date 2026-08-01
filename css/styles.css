@@ -437,3 +437,27 @@ td.is-selected .datepicker-day-button{ background: var(--cor-accent) !important;
 .datepicker-cancel:hover, .datepicker-clear:hover, .datepicker-done:hover{ background: var(--cor-superficie-mais-alta) !important; }
 
 .datepicker-controls select{ background: var(--cor-superficie-mais-alta); color: var(--cor-texto); border:1px solid var(--cor-borda); border-radius: var(--raio-input); }
+
+/* Modal de confirmação - sobreposição total */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex;
+    align-items: center; justify-content: center; z-index: 10000;
+    /* valor alto para garantir que fique acima de tudo */
+  padding: 20px; backdrop-filter: blur(4px);
+    box-sizing: border-box;
+}
+
+.modal-box {
+    max-width: 420px; width: 100%; background: var(--cor-superficie); border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-card); padding: 28px; box-shadow: var(--sombra); box-sizing: border-box;
+}
+.modal-box h4 { color: var(--cor-texto); margin-bottom: 16px; font-size: 18px; text-transform: uppercase; letter-spacing: .04em }
+
+/* Spinner para botões */
+.spinner {
+    display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(0,0,0,0.1); border-top: 2px solid #000;
+    border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 8px; vertical-align: middle;
+}
+
+@keyframes spin { from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); } }
