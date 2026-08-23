@@ -13,6 +13,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+document.addEventListener('click', (evento) => {
+  const modalSenhas = document.getElementById('modal-senhas');
+  if (!modalSenhas || modalSenhas.style.display === 'none') return;
+  if (evento.target === modalSenhas) {
+    fecharModalSenhas();
+  }
+});
+
+document.addEventListener('keydown', (evento) => {
+  if (evento.key === 'Escape') {
+    fecharModalSenhas();
+  }
+});
+
 function mostrarLogin() {
   document.getElementById('tela-login').classList.remove('oculto');
   document.getElementById('app').classList.add('oculto');
@@ -285,3 +299,58 @@ document.addEventListener('click', (evento) => {
   if (!perfil || !menu || !menu.classList.contains('aberto')) return;
   if (!perfil.contains(evento.target)) menu.classList.remove('aberto');
 });
+
+async function abrirModalSenhas() {
+  // Fecha o menu mobile se estiver aberto
+  const menu = document.getElementById('perfil-opcoes');
+  if (menu) menu.classList.remove('aberto');
+
+  // Abre o modal
+  document.getElementById('modal-senhas').style.display = 'flex';
+
+  // Mostra carregando
+  document.getElementById('lista-senhas').innerHTML = '<div class="carregando">Carregando...</div>';
+
+  try {
+    const resultado = await chamarBackend('listarStreamingsComSenhas');
+    if (!resultado.sucesso) {
+      exibirToast(resultado.mensagem || 'Erro ao carregar senhas.', 'erro');
+      document.getElementById('lista-senhas').innerHTML = '<div class="vazio">Erro ao carregar senhas.</div>';
+      return;
+    }
+
+    if (!resultado.streamings || resultado.streamings.length === 0) {
+      document.getElementById('lista-senhas').innerHTML = '<div class="vazio">Nenhum streaming com senha cadastrada.</div>';
+      return;
+    }
+
+    document.getElementById('lista-senhas').innerHTML = resultado.streamings.map(s => `
+      <div class="card-divisao" style="margin-bottom:8px;">
+        <div class="coluna" style="flex:0 0 25%; max-width:25%; padding:10px;">
+          ${s.urlLogo ? `<img src="${s.urlLogo}" style="height:32px; max-width:56px; object-fit:contain;">` : `<span class="inicial" style="width:32px; height:32px; border-radius:4px; background:var(--cor-superficie-mais-alta); display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--cor-accent);">${(s.streaming || '?').charAt(0)}</span>`}
+        </div>
+        <div class="coluna" style="flex:0 0 25%; max-width:25%;">
+          <div class="rotulo-mini">Streaming</div>
+          <div class="valor-mini">${s.streaming}${s.plano ? ' — ' + s.plano : ''}</div>
+        </div>
+        <div class="coluna" style="flex:0 0 50%; max-width:50%; display:flex; flex-direction:column; gap:8px;">
+          <div>
+            <div class="rotulo-mini">Login</div>
+            <div class="valor-mini" style="word-break:break-all;">${s.login}</div>
+          </div>
+          <div>
+            <div class="rotulo-mini">Senha</div>
+            <div class="valor-mini" style="word-break:break-all;">${s.senha}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch (erro) {
+    exibirToast('Erro ao carregar senhas: ' + erro.message, 'erro');
+    document.getElementById('lista-senhas').innerHTML = '<div class="vazio">Erro ao carregar senhas.</div>';
+  }
+}
+
+function fecharModalSenhas() {
+  document.getElementById('modal-senhas').style.display = 'none';
+}

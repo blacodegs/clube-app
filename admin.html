@@ -257,20 +257,7 @@
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/admin.js"></script>
+  <script src="js/pwa.js"></script> <!-- Service Worker -->
 
-  <!-- Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw.js')
-          .then(function(registration) {
-            console.log('Service Worker registrado com sucesso:', registration);
-          })
-          .catch(function(error) {
-            console.log('Falha ao registrar Service Worker:', error);
-          });
-      });
-    }
-  </script>
 </body>
 </html>
