@@ -170,7 +170,7 @@ function renderizarPagamento(d) {
     secao.innerHTML = `
       <div class="painel-pagamento">
         <div class="lado-info" style="border-right:none;">
-          <div class="rotulo" style="color:var(--cor-texto-muted); font-size:12px; text-transform:uppercase; letter-spacing:1px;">Você está no azul 🎉</div>
+          <div class="rotulo" style="color:var(--cor-texto-muted); font-size:12px; text-transform:uppercase; letter-spacing:1px;">Você está no azul</div>
           <p style="margin-top:14px; line-height:1.6;">
             Você pagou <strong>${formatarMoeda(d.valorPagoDiretoMes)}</strong> direto à plataforma, e o valor devido da sua participação na divisão é de <strong>${formatarMoeda(d.valorDevidoDivisaoBrutoMes)}</strong>.
             Ou seja: você deve <strong style="color:var(--cor-accent);">receber ${formatarMoeda(d.creditoAReceberMes)}</strong> de volta.
@@ -181,7 +181,7 @@ function renderizarPagamento(d) {
   }
 
   if (!d.pendentes || d.pendentes.length === 0) {
-    secao.innerHTML = '<div class="vazio">Nenhum pagamento pendente no momento. Tudo em dia! 🎉</div>';
+    secao.innerHTML = '<div class="vazio">Nenhum pagamento pendente no momento. Tudo em dia!</div>';
     return;
   }
   // Usa o lançamento mais próximo do vencimento
